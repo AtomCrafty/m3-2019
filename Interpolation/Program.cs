@@ -33,7 +33,6 @@ namespace Interpolation {
 			//plot.PlotFunction(Newton(fixPoints), Color.LimeGreen, DashStyle.Dot);
 			plot.PlotFunction(LinearSpline(fixPoints), Color.Red);
 			plot.PlotFunction(CubicSpline(fixPoints), Color.LimeGreen, DashStyle.Dash);
-			plot.PlotFunction(CubicSpline(fixPoints), Color.LimeGreen, DashStyle.Dash);
 			plot.PlotPoints(fixPoints, Color.Gray);
 			plot.Save("interpolation.png");
 			Process.Start("interpolation.png");
@@ -280,6 +279,7 @@ namespace Interpolation {
 		}
 	}
 
+	// Code adapted from https://msdn.microsoft.com/en-us/magazine/mt736457.aspx
 	public static class Matrix {
 
 		public static float[,] Identity(int n) {
