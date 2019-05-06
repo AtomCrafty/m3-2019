@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 
-namespace Interpolation {
+namespace M3.Interpolation {
 	public static class Program {
 		public static void Main(string[] args) {
 			Func<float, float> f1 = f => (float)Math.Sin(f);
@@ -18,21 +18,14 @@ namespace Interpolation {
 
 		public static void Approximate(Func<float, float> func, IEnumerable<float> samplePoints) {
 			var fixPoints = samplePoints.Select(x => new PointF(x, func(x))).ToArray();
-			//fixPoints = new[] {
-			//	new PointF(0, +0f),
-			//	new PointF(1, +1f),
-			//	new PointF(2, -1f),
-			//	new PointF(3, +2f),
-			//	new PointF(4, +0f),
-			//	new PointF(5, +1f),
-			//};
 
-			var plot = new Plot(-10.2f, 10.2f, 100, -2.2f, 2.2f, 100, 40);
+			var plot = new Plot(-10.2f, 10.2f, 100, -3.2f, 2.2f, 100, 40);
 			plot.PlotFunction(func, Color.Gray);
 			//plot.PlotFunction(Lagrange(fixPoints), Color.DodgerBlue);
 			//plot.PlotFunction(Newton(fixPoints), Color.LimeGreen, DashStyle.Dot);
 			plot.PlotFunction(LinearSpline(fixPoints), Color.Red);
 			plot.PlotFunction(CubicSpline(fixPoints), Color.LimeGreen, DashStyle.Dash);
+			plot.DrawBezier(new[] { new PointF(-1, -1), new PointF(-1, 2), new PointF(1, 2), new PointF(2, 1), new PointF(1, -1) }, Color.CornflowerBlue);
 			plot.PlotPoints(fixPoints, Color.Gray);
 			plot.Save("interpolation.png");
 			Process.Start("interpolation.png");
@@ -185,97 +178,6 @@ namespace Interpolation {
 				result[i] = rMatrix[i, 0];
 			}
 			return result;
-		}
-	}
-
-	public class Plot {
-		public readonly float XMin, XMax, XScale, XRange;
-		public readonly float YMin, YMax, YScale, YRange;
-		public readonly int Border, Width, Height;
-
-		private readonly Bitmap _bitmap;
-		private readonly Graphics _graphics;
-
-		public Plot(float xMin, float xMax, float xScale, float yMin, float yMax, float yScale, int border) {
-			XMin = xMin;
-			XMax = xMax;
-			XScale = xScale;
-			XRange = xMax - xMin;
-			YMin = yMin;
-			YMax = yMax;
-			YScale = yScale;
-			YRange = yMax - yMin;
-			Border = border;
-			Width = (int)((XMax - XMin) * XScale);
-			Height = (int)((YMax - YMin) * YScale);
-			_bitmap = new Bitmap(Width, Height);
-			_graphics = Graphics.FromImage(_bitmap);
-			_graphics.SmoothingMode = SmoothingMode.AntiAlias;
-			Clear();
-			DrawGrid();
-		}
-
-		private void DrawGrid() {
-			int xMin = (int)Math.Ceiling(XMin);
-			int xMax = (int)Math.Floor(XMax);
-			int yMin = (int)Math.Ceiling(YMin);
-			int yMax = (int)Math.Floor(YMax);
-			for(int i = xMin; i <= xMax; i++) {
-				var start = ToImageSpace(new PointF(i, YMin));
-				var end = ToImageSpace(new PointF(i, YMax));
-				_graphics.DrawLine(new Pen(Color.WhiteSmoke, 3) { DashStyle = DashStyle.Dash }, start, end);
-			}
-
-			for(int i = yMin; i <= yMax; i++) {
-				var start = ToImageSpace(new PointF(XMin, i));
-				var end = ToImageSpace(new PointF(XMax, i));
-				_graphics.DrawLine(new Pen(Color.WhiteSmoke, 3) { DashStyle = DashStyle.Dash }, start, end);
-			}
-		}
-
-		public void PlotPoints(IEnumerable<PointF> points, Color color, float diameter = 12) {
-			foreach(var point in points.Select(ToImageSpace)) {
-				_graphics.FillEllipse(new SolidBrush(color), point.X - diameter / 2, point.Y - diameter / 2, diameter, diameter);
-			}
-		}
-
-		public void PlotFunction(Func<float, float> func, Color color, DashStyle dash = DashStyle.Solid) {
-			var curve = Enumerable.Range(0, Width + 1).Select(i => new PointF(i * XRange / (Width + 1) + XMin, func(i / XScale + XMin).Clamp(2 * YMin - YMax, 2 * YMax + YMin))).Select(ToImageSpace).ToArray();
-			_graphics.DrawLines(new Pen(color, 3) { DashStyle = dash }, curve);
-		}
-
-		public void Save(string path) {
-			using(var copy = new Bitmap(_bitmap.Width + Border * 2, _bitmap.Height + Border * 2))
-			using(var gfx = Graphics.FromImage(copy)) {
-				gfx.Clear(Color.White);
-				gfx.DrawImageUnscaled(_bitmap, Border, Border);
-				gfx.DrawRectangle(new Pen(Color.Black, 3), Border, Border, Width, Height);
-				copy.RotateFlip(RotateFlipType.RotateNoneFlipY);
-				copy.Save(path);
-			}
-		}
-
-		public void Clear() {
-			_graphics.Clear(Color.White);
-		}
-
-		public PointF ToImageSpace(PointF point) {
-			float x = (point.X - XMin) * XScale;
-			float y = (point.Y - YMin) * YScale;
-			return new PointF(x, y);
-		}
-	}
-
-	public static class Extensions {
-		public static float Clamp(this float value, float min, float max) => Math.Min(Math.Max(value, min), max);
-		public static float Product(this IEnumerable<float> enumerable) => enumerable.Aggregate(1f, (f1, f2) => f1 * f2);
-
-		public static float[] GetRow(this float[,] m, int row) {
-			var buffer = new float[m.GetLength(1)];
-			for(int i = 0; i < buffer.Length; i++) {
-				buffer[i] = m[row, i];
-			}
-			return buffer;
 		}
 	}
 
@@ -460,6 +362,14 @@ namespace Interpolation {
 				m[r1, i] = m[r2, i];
 				m[r2, i] = t;
 			}
+		}
+
+		public static float[] GetRow(float[,] m, int row) {
+			var buffer = new float[m.GetLength(1)];
+			for(int i = 0; i < buffer.Length; i++) {
+				buffer[i] = m[row, i];
+			}
+			return buffer;
 		}
 	}
 }

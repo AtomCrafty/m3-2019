@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interpolation", "Interpolation\Interpolation.csproj", "{A410FB9F-0155-4BFA-9063-A8F82719100B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "Base\Base.csproj", "{C2815026-EA18-4E80-B615-F996B6F5D899}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DifferentialEquations", "DifferentialEquations\DifferentialEquations.csproj", "{F32553CE-B111-4118-BAEE-8BFEFBABC275}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{A410FB9F-0155-4BFA-9063-A8F82719100B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A410FB9F-0155-4BFA-9063-A8F82719100B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A410FB9F-0155-4BFA-9063-A8F82719100B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2815026-EA18-4E80-B615-F996B6F5D899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2815026-EA18-4E80-B615-F996B6F5D899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2815026-EA18-4E80-B615-F996B6F5D899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2815026-EA18-4E80-B615-F996B6F5D899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F32553CE-B111-4118-BAEE-8BFEFBABC275}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F32553CE-B111-4118-BAEE-8BFEFBABC275}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F32553CE-B111-4118-BAEE-8BFEFBABC275}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F32553CE-B111-4118-BAEE-8BFEFBABC275}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
